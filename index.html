@@ -48,12 +48,14 @@
       <div>
         <p class="section-kicker">Method</p>
         <h2>One interface, multiple regimes.</h2>
-        <p>WarpSAC automatically resolves defaults from the environment type. The main controls are the decay-based replay schedule, actor and critic parameter normalization, and the compute/replay device configuration.</p>
+        <p>WarpSAC is a controlled extension of FlashSAC that separates replay-side exploitation from network-side stabilization. Its main replay component is <strong>Sample Weight Decay (SWD)</strong>: each transition receives an age-dependent sampling weight, so recent, policy-relevant data are sampled more often while older transitions retain a nonzero floor for coverage. SWD changes only the minibatch distribution; it adds no auxiliary network, Bellman target, or loss term.</p>
+        <p>With a decay horizon <code>T<sub>decay</sub></code>, the weight decreases with transition age and is normalized across valid entries. Setting <code>decay_step=0</code> gives every transition the same weight and recovers uniform replay. Because SWD improves how a fixed update budget is allocated rather than relying on data volume, we use it in both CPU-scale and GPU-parallel regimes.</p>
+        <p>Parameter projection normalization is selected from replay coverage. It renormalizes network parameters after each optimizer step, constraining the effective function class and reducing unstable value extrapolation. This is useful when CPU-scale training has narrow replay coverage, so WarpSAC-L keeps normalization enabled together with clipped double-Q targets. GPU-parallel simulation collects broad, rapidly refreshed data; in this data-abundant regime, the same constraint can restrict value fitting, so WarpSAC-A disables parameter normalization and uses the less conservative single-Q variant.</p>
       </div>
       <div class="spec-list">
-        <div><strong>CPU scale</strong><span>Single-environment simulation and CPU replay</span></div>
-        <div><strong>GPU scale</strong><span>1024 vectorized environments and CUDA replay</span></div>
-        <div><strong>Sim-to-real</strong><span>Unitree G1 Flat locomotion with the MJLab pipeline</span></div>
+        <div><strong>WarpSAC-L</strong><span>Data-limited CPU scale: SWD, Norm ON, clipped double-Q</span></div>
+        <div><strong>WarpSAC-A</strong><span>Data-abundant GPU scale: SWD, Norm OFF, single-Q</span></div>
+        <div><strong>Automatic profiles</strong><span>Defaults are resolved from the environment type and replay regime</span></div>
       </div>
     </section>
 
@@ -87,14 +89,11 @@
       </div>
     </section>
 
-    <section class="shell section command-section">
-      <p class="section-kicker">Reproducibility</p>
-      <h2>Run the sim-to-real configuration.</h2>
-      <pre><code>CUDA_VISIBLE_DEVICES=0 python train_warpsac.py \
-  --env-id Unitree-G1-Flat \
-  --env-type mjlab \
-  --backend jax \
-  --seed 1</code></pre>
+    <section class="shell section" id="getting-started">
+      <p class="section-kicker">Getting started</p>
+      <h2>Get Started with WarpSAC Codebase</h2>
+      <p>We provide an easy-to-use implementation of <strong>WarpSAC</strong> with practical features for scalable off-policy reinforcement-learning research in robotics. The codebase supports JAX and PyTorch backends, automatic environment-specific configuration, CPU and CUDA replay, and the Unitree G1 MJLab sim-to-real setup.</p>
+      <p>Please check out the <a href="https://github.com/wzhhasadream/warprl">WarpSAC GitHub repository</a> for installation instructions, training commands, environment integrations, and configuration options.</p>
     </section>
 
     <section class="shell section citation" id="citation">
@@ -103,7 +102,7 @@
       <p>Use the following entry when citing the project. Update the author and venue fields when the paper metadata is final.</p>
       <pre><code>@article{warpsac,
   title  = {WarpSAC: Towards the Pinnacle of Scalable Off-Policy Reinforcement Learning},
-  author = {Tang, Hongyao and collaborators},
+  author = {Wu, Zihao and Tang, Hongyao and Ma, Yi and Song, Huizhong and Li, Pengyi and Yuan, Yifu and Ni, Fei and Liu, Jinyi and Wei, Wei and Wang, Jianrong and Zheng, Yan and Hao, Jianye},
   year   = {2026}
 }</code></pre>
     </section>
