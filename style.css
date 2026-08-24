@@ -34,7 +34,7 @@ h3 { font-size: 1.2rem; }
 .button-primary { color: var(--brand); }
 .abstract-band { padding: 30px 0 32px; text-align: center; background: var(--band); }
 .abstract-band h2 { margin-bottom: 18px; }
-.abstract-band p { max-width: 840px; margin: 0 auto 14px; text-align: left; }
+.abstract-band p { max-width: 840px; margin: 0 auto 14px; text-align: center; }
 .abstract-band p:last-child { margin-bottom: 0; }
 .media-band { padding: 46px 0 50px; background: #fff; }
 .media-grid { display: grid; grid-template-columns: 0.82fr 1.18fr; align-items: center; gap: 34px; }
