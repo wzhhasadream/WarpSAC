@@ -3,108 +3,95 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="WarpSAC: regime-aware scalable off-policy reinforcement learning.">
-  <title>WarpSAC</title>
-  <style>
-    :root {
-      color-scheme: light;
-      font-family: Arial, Helvetica, sans-serif;
-      color: #17151b;
-      background: #f7f7f5;
-    }
-
-    * {
-      box-sizing: border-box;
-      letter-spacing: 0;
-    }
-
-    body {
-      min-height: 100vh;
-      margin: 0;
-      display: grid;
-      place-items: center;
-      background: #f7f7f5;
-    }
-
-    main {
-      width: min(1120px, 100%);
-      min-height: min(760px, 88vh);
-      padding: 56px 64px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      background: #ffffff url("warp-mark.png") center / contain no-repeat;
-      border-top: 4px solid #7436b0;
-    }
-
-    .brand {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .hero {
-      max-width: 680px;
-      padding: 48px 0;
-    }
-
-    h1 {
-      margin: 0 0 18px;
-      font-size: 84px;
-      line-height: 0.95;
-      font-weight: 800;
-    }
-
-    .subtitle {
-      margin: 0;
-      max-width: 620px;
-      font-size: 24px;
-      line-height: 1.35;
-      font-weight: 600;
-    }
-
-    footer {
-      display: flex;
-      justify-content: space-between;
-      gap: 24px;
-      padding-top: 20px;
-      border-top: 1px solid #d8d6dc;
-      font-size: 14px;
-      color: #56515d;
-    }
-
-    @media (max-width: 700px) {
-      main {
-        min-height: 82vh;
-        padding: 32px 24px;
-        background-size: 150%;
-      }
-
-      h1 {
-        font-size: 52px;
-      }
-
-      .subtitle {
-        font-size: 20px;
-      }
-
-      footer {
-        flex-direction: column;
-      }
-    }
-  </style>
+  <meta name="description" content="WarpSAC: scalable off-policy reinforcement learning.">
+  <title>WarpSAC | Scalable Off-Policy RL</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <header class="hero shell">
+    <p class="eyebrow">Research Project</p>
+    <h1>WarpSAC</h1>
+    <p class="tagline">Towards the Pinnacle of Scalable Off-Policy Reinforcement Learning by Rethinking Exploration and Exploitation</p>
+    <p class="authors">Hongyao Tang and collaborators</p>
+    <div class="actions" aria-label="Project links">
+      <a class="button button-primary" href="https://github.com/wzhhasadream/warprl">Code</a>
+      <a class="button" href="assets/warpsac-paper.pdf">Paper</a>
+      <a class="button" href="#results">Results</a>
+      <a class="button" href="#citation">Citation</a>
+    </div>
+  </header>
+
   <main>
-    <p class="brand">WarpSAC</p>
-    <section class="hero" aria-labelledby="page-title">
-      <h1 id="page-title">WarpSAC</h1>
-      <p class="subtitle">Regime-aware scalable off-policy reinforcement learning.</p>
+    <section class="media-band">
+      <div class="shell media-grid">
+        <div>
+          <p class="section-kicker">WarpSAC in action</p>
+          <h2>Scalable learning for challenging control regimes.</h2>
+          <p class="lede">WarpSAC extends FlashSAC with regime-aware replay and stabilization choices, improving sample efficiency and training wall-clock efficiency in the evaluated settings.</p>
+        </div>
+        <video class="demo" controls muted loop playsinline preload="metadata" src="assets/warpsac.mp4">
+          Your browser does not support embedded video. <a href="assets/warpsac.mp4">Open the demo video.</a>
+        </video>
+      </div>
     </section>
-    <footer>
-      <span>Project page reserved.</span>
-      <span>Paper and code will be released together.</span>
-    </footer>
+
+    <section class="shell section" id="abstract">
+      <p class="section-kicker">Overview</p>
+      <h2>Abstract</h2>
+      <p>WarpSAC is an off-policy reinforcement-learning framework designed for both CPU-scale and GPU-parallel simulation. It provides JAX and PyTorch backends and supports continuous-control environments spanning MuJoCo, IsaacLab, MJLab, ManiSkill, and related benchmark suites.</p>
+      <p>Our implementation focuses on the interaction between exploration, replay prioritization, parameter normalization, and scalable updates. The same training interface can be used for standard simulator benchmarks and the Unitree G1 sim-to-real locomotion setup.</p>
+    </section>
+
+    <section class="shell section split" id="method">
+      <div>
+        <p class="section-kicker">Method</p>
+        <h2>One interface, multiple regimes.</h2>
+        <p>WarpSAC automatically resolves defaults from the environment type. The main controls are the decay-based replay schedule, actor and critic parameter normalization, and the compute/replay device configuration.</p>
+      </div>
+      <div class="spec-list">
+        <div><strong>CPU scale</strong><span>Single-environment simulation and CPU replay</span></div>
+        <div><strong>GPU scale</strong><span>1024 vectorized environments and CUDA replay</span></div>
+        <div><strong>Sim-to-real</strong><span>Unitree G1 Flat locomotion with the MJLab pipeline</span></div>
+      </div>
+    </section>
+
+    <section class="shell section" id="results">
+      <p class="section-kicker">Experiments</p>
+      <h2>Sample efficiency and training wall time.</h2>
+      <p>On the Unitree G1 Flat task, the paired curves report sample efficiency and training wall-clock time for WarpSAC, FlashSAC, and PPO.</p>
+      <figure class="figure">
+        <img src="assets/unitree_g1_flat_learning_curves.png" alt="Unitree G1 Flat sample-efficiency and wall-time learning curves">
+        <figcaption>Unitree G1 Flat sim-to-real learning curves.</figcaption>
+      </figure>
+      <div class="result-links" aria-label="Additional results">
+        <a href="assets/cpu-gpu-curves.pdf">CPU/GPU scalable-regime curves</a>
+        <a href="assets/unitree-g1-comparison.pdf">Unitree G1 comparison</a>
+        <a href="assets/unitree-g1-flat-curves.pdf">Unitree G1 sim-to-real curves</a>
+      </div>
+    </section>
+
+    <section class="shell section command-section">
+      <p class="section-kicker">Reproducibility</p>
+      <h2>Run the sim-to-real configuration.</h2>
+      <pre><code>CUDA_VISIBLE_DEVICES=0 python train_warpsac.py \
+  --env-id Unitree-G1-Flat \
+  --env-type mjlab \
+  --backend jax \
+  --seed 1</code></pre>
+    </section>
+
+    <section class="shell section citation" id="citation">
+      <p class="section-kicker">Reference</p>
+      <h2>Citation</h2>
+      <p>Use the following entry when citing the project. Update the author and venue fields when the paper metadata is final.</p>
+      <pre><code>@article{warpsac,
+  title  = {WarpSAC: Towards the Pinnacle of Scalable Off-Policy Reinforcement Learning},
+  author = {Tang, Hongyao and collaborators},
+  year   = {2026}
+}</code></pre>
+    </section>
   </main>
+
+  <footer class="shell footer">WarpSAC · Official project page</footer>
 </body>
 </html>
