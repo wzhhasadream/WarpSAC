@@ -45,18 +45,9 @@ h2 { font-size: clamp(1.8rem, 3vw, 2.8rem); }
 .spec-list { border-top: 1px solid var(--line); }
 .spec-list div { display: grid; grid-template-columns: 130px 1fr; gap: 18px; padding: 20px 0; border-bottom: 1px solid var(--line); }
 .spec-list span { color: var(--muted); }
-.figure { margin: 36px 0 0; }
-.figure img { display: block; width: 100%; border: 1px solid var(--line); border-radius: 6px; }
+.figure { width: min(100%, 920px); margin: 36px 0 0; }
+.figure img { display: block; width: 100%; max-width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; }
 figcaption { margin-top: 10px; color: var(--muted); font-size: 0.9rem; }
-.result-links { display: flex; flex-wrap: wrap; gap: 12px 24px; margin-top: 22px; }
-.result-links a { color: var(--accent-dark); font-weight: 700; text-decoration-thickness: 1px; text-underline-offset: 3px; }
-.domain-results { margin-top: 52px; }
-.domain-group + .domain-group { margin-top: 46px; }
-.domain-group h3 { margin: 0 0 18px; font-size: 1.25rem; }
-.domain-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
-.domain-grid figure { margin: 0; min-width: 0; }
-.domain-grid img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 5px; background: #fff; }
-.domain-grid figcaption { font-weight: 700; }
 pre { overflow-x: auto; margin: 28px 0 0; padding: 24px; border-radius: 8px; color: #e7edf2; background: #18232f; font: 0.9rem/1.6 "SFMono-Regular", Consolas, monospace; }
 .footer { padding: 28px 0 48px; color: var(--muted); font-size: 0.9rem; }
 @media (max-width: 760px) {
