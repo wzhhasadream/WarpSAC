@@ -74,7 +74,7 @@ Parameter projection normalization is the profile-level distinction between the 
 
 CPU-scale and GPU-parallel workloads use the same SWD replay mechanism; the profile distinction here is parameter normalization. We therefore report them separately, using WarpSAC-L with normalization enabled for CPU-scale environments and WarpSAC-A with normalization disabled for GPU-parallel environments.
 
-![CPU-scale learning curves in four data-limited environments](assets/png/cpu_norm_on_four_panel_curves.png)
+![CPU-scale learning curves across four benchmark groups](assets/png/cpu_norm_on_four_panel_curves.png)
 
 ::: caption
 **Figure 3.** CPU-scale learning curves across MuJoCo, DMC, HumanoidBench, and MyoSuite. WarpSAC-L is evaluated with parameter normalization enabled.
@@ -82,7 +82,7 @@ CPU-scale and GPU-parallel workloads use the same SWD replay mechanism; the prof
 
 The following results evaluate WarpSAC-A with parameter normalization disabled in IsaacLab, ManiSkill, MJLab, and Playground.
 
-![GPU-parallel learning curves in four data-abundant environments](assets/png/gpu_single_q_four_panel_curves.png)
+![GPU-parallel learning curves across four benchmark groups](assets/png/gpu_single_q_four_panel_curves.png)
 
 ::: caption
 **Figure 4.** GPU-parallel learning curves across IsaacLab, ManiSkill, MJLab, and Playground. WarpSAC-A is evaluated with parameter normalization disabled.

@@ -123,13 +123,13 @@
 <h2 class="title is-3">Results</h2>
 <h3 class="title is-4">CPU-Scale vs. GPU-Parallel</h3>
 <p>CPU-scale and GPU-parallel workloads use the same SWD replay mechanism; the profile distinction here is parameter normalization. We therefore report them separately, using WarpSAC-L with normalization enabled for CPU-scale environments and WarpSAC-A with normalization disabled for GPU-parallel environments.</p>
-<p><img src="assets/png/cpu_norm_on_four_panel_curves.png" alt="CPU-scale learning curves in four data-limited environments" /></p>
+<p><img src="assets/png/cpu_norm_on_four_panel_curves.png" alt="CPU-scale learning curves across four benchmark groups" /></p>
 <div class="figure-caption content has-text-centered">
 <p><strong>Figure 3.</strong> CPU-scale learning curves across MuJoCo, DMC, HumanoidBench, and MyoSuite. WarpSAC-L is evaluated with parameter normalization enabled.</p>
 
 </div>
 <p>The following results evaluate WarpSAC-A with parameter normalization disabled in IsaacLab, ManiSkill, MJLab, and Playground.</p>
-<p><img src="assets/png/gpu_single_q_four_panel_curves.png" alt="GPU-parallel learning curves in four data-abundant environments" /></p>
+<p><img src="assets/png/gpu_single_q_four_panel_curves.png" alt="GPU-parallel learning curves across four benchmark groups" /></p>
 <div class="figure-caption content has-text-centered">
 <p><strong>Figure 4.</strong> GPU-parallel learning curves across IsaacLab, ManiSkill, MJLab, and Playground. WarpSAC-A is evaluated with parameter normalization disabled.</p>
 
