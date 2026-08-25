@@ -1,0 +1,287 @@
+/* WarpSAC overrides on top of the Nerfies/Bulma project-page layout. */
+
+body {
+  font-family: "Noto Sans", sans-serif;
+  color: #363636;
+  background: #fff;
+}
+
+.publication-title,
+.publication-authors,
+.teaser {
+  font-family: "Google Sans", "Noto Sans", sans-serif;
+}
+
+.project-navbar {
+  width: min(960px, calc(100% - 2rem));
+  min-height: 3rem;
+  margin: 0 auto;
+  background: transparent;
+}
+
+.project-navbar .navbar-menu {
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  box-shadow: none;
+}
+
+.project-navbar .navbar-start {
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.project-navbar .navbar-item {
+  color: #4a4a4a;
+  font-family: "Google Sans", "Noto Sans", sans-serif;
+  font-size: 0.95rem;
+}
+
+.project-navbar .navbar-item:hover {
+  color: #3273dc;
+  background: transparent;
+}
+
+.hero .hero-body {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.publication-title {
+  max-width: 1000px;
+  margin: 0 auto;
+  font-size: clamp(2.25rem, 4.8vw, 3.45rem) !important;
+  font-weight: 500 !important;
+  line-height: 1.16 !important;
+}
+
+.publication-authors {
+  margin-top: 1.15rem;
+}
+
+.publication-authors p {
+  margin-bottom: 0.45rem;
+}
+
+.publication-authors a {
+  text-decoration: none;
+}
+
+.publication-authors a:hover {
+  text-decoration: underline;
+}
+
+.dark-mode-control {
+  position: fixed;
+  z-index: 30;
+  top: 16px;
+  right: 16px;
+  padding: 7px 11px;
+  color: #363636;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #dbdbdb;
+  border-radius: 999px;
+  box-shadow: 0 4px 16px rgba(10, 10, 10, 0.08);
+  font-size: 0.85rem;
+}
+
+.dark-mode-control label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+}
+
+body.dark-mode {
+  background: #1a1a1a;
+  color: #f5f5f5;
+}
+
+body.dark-mode .hero,
+body.dark-mode .section,
+body.dark-mode .footer {
+  background: #1a1a1a;
+  color: #f5f5f5;
+}
+
+body.dark-mode .hero.is-light {
+  background: #242424 !important;
+}
+
+body.dark-mode .title,
+body.dark-mode .subtitle,
+body.dark-mode .content,
+body.dark-mode .publication-authors {
+  color: #f5f5f5;
+}
+
+body.dark-mode .dark-mode-control {
+  color: #f5f5f5;
+  background: rgba(36, 36, 36, 0.92);
+  border-color: #4a4a4a;
+}
+
+body.dark-mode .results-carousel .item,
+body.dark-mode .markdown-content img {
+  border-color: #4a4a4a;
+}
+
+.teaser .hero-body {
+  padding-top: 0;
+  padding-bottom: 3rem;
+}
+
+.teaser video,
+.section video,
+.results-carousel video {
+  display: block;
+  width: 100%;
+  border-radius: 10px;
+  background: #0b1015;
+}
+
+.media-row {
+  width: 100%;
+  margin: 1.8rem auto 0;
+}
+
+.media-column {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.media-column > p:first-child {
+  margin-top: 0;
+}
+
+.media-column > p:first-child img,
+.media-column > img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  border: 1px solid #dbdbdb;
+  border-radius: 6px;
+}
+
+.media-caption {
+  margin: 0.7rem 0 0.15rem !important;
+  color: #555;
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.figure-caption {
+  width: min(100%, 920px);
+  margin: 0.7rem auto 1.6rem;
+  color: #555;
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.content img {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  border: 1px solid #dbdbdb;
+  border-radius: 6px;
+}
+
+.section {
+  padding-top: 3.5rem;
+  padding-bottom: 3.5rem;
+}
+
+.section .content > h2,
+.section .content > h3 {
+  text-align: center;
+}
+
+#abstract .content p {
+  text-align: center;
+}
+
+.content table {
+  width: 100%;
+  margin: 1.5rem 0;
+}
+
+.content table th {
+  color: #3273dc;
+  text-align: center !important;
+}
+
+.content table td {
+  text-align: center !important;
+  vertical-align: middle;
+}
+
+.section h3.title {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.publication-links {
+  margin-top: 1rem;
+}
+
+.results-carousel {
+  margin: 0 auto;
+}
+
+.results-carousel .item {
+  padding: 0 0 1rem;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.results-carousel .media-caption {
+  display: block;
+}
+
+.footer .icon-link {
+  font-size: 25px;
+  color: #000;
+}
+
+body.dark-mode .footer .icon-link {
+  color: #f5f5f5;
+}
+
+body.dark-mode .project-navbar .navbar-item {
+  color: #f5f5f5;
+}
+
+body.dark-mode .project-navbar .navbar-item:hover {
+  color: #8cc8ff;
+}
+
+body.dark-mode .media-caption,
+body.dark-mode .figure-caption {
+  color: #c5cbd2;
+}
+
+body.dark-mode .content table th {
+  color: #8cc8ff;
+}
+
+body.dark-mode .content strong,
+body.dark-mode .content table td,
+body.dark-mode .content table td strong {
+  color: #f5f5f5 !important;
+}
+
+body.dark-mode .content table th,
+body.dark-mode .content table td {
+  text-align: center !important;
+}
+
+@media screen and (max-width: 768px) {
+  .publication-links .link-block {
+    display: block;
+  }
+}

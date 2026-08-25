@@ -3,110 +3,253 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="WarpSAC: scalable off-policy reinforcement learning.">
-  <title>WarpSAC | Scalable Off-Policy RL</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="description" content="WarpSAC: Towards the Pinnacle of Scalable Off-Policy RL by Rethinking Exploration and Exploitation">
+  <title>WarpSAC | Research Project</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="stylesheet" href="./static/css/warpsac.css">
+
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
 </head>
 <body>
-  <header class="hero shell">
-    <p class="eyebrow">Research Project</p>
-    <h1>WarpSAC</h1>
-    <p class="tagline">Towards the Pinnacle of Scalable Off-Policy Reinforcement Learning by Rethinking Exploration and Exploitation</p>
-    <p class="authors">Zihao Wu<sup>1</sup>, Hongyao Tang<sup>1</sup>, Yi Ma<sup>2</sup>, Huizhong Song<sup>2</sup>, Pengyi Li<sup>1</sup>, Yifu Yuan<sup>1</sup>, Fei Ni<sup>3</sup>, Jinyi Liu<sup>1</sup>, Wei Wei<sup>2</sup>, Jianrong Wang<sup>1</sup>, Yan Zheng<sup>1</sup>, and Jianye Hao<sup>1</sup></p>
-    <p class="affiliations"><sup>1</sup>Tianjin University &nbsp; <sup>2</sup>Shanxi University &nbsp; <sup>3</sup>Imperial College London</p>
-    <p class="contributions">Equal contribution · Corresponding author</p>
-    <div class="actions" aria-label="Project links">
-      <a class="button button-primary" href="https://github.com/wzhhasadream/warprl">Code</a>
-      <a class="button" href="assets/warpsac-paper.pdf">Paper</a>
-      <a class="button" href="#results">Results</a>
-      <a class="button" href="#citation">Citation</a>
+<nav class="navbar project-navbar" role="navigation" aria-label="Project navigation">
+  <div class="navbar-menu is-active">
+    <div class="navbar-start">
+      <a class="navbar-item" href="./" aria-label="WarpSAC home" title="WarpSAC home">
+        <span class="icon"><i class="fas fa-home" aria-hidden="true"></i></span>
+      </a>
+      <a class="navbar-item" href="#results">Results</a>
+      <a class="navbar-item" href="#getting-started">Getting started</a>
+      <a class="navbar-item" href="#citation">Citation</a>
     </div>
-  </header>
+  </div>
+</nav>
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+<div class="dark-mode-control"><label><input type="checkbox" data-dark-mode> Dark mode</label></div>
+<h1 class="title is-1 publication-title">WarpSAC: Towards the Pinnacle of Scalable Off-Policy RL by Rethinking Exploration and Exploitation</h1>
+<div class="is-size-5 publication-authors">
+<p>Zihao Wu<sup>1</sup>, Hongyao Tang<sup>1</sup>, Yi Ma<sup>2</sup>, Huizhong Song<sup>2</sup>, Pengyi Li<sup>1</sup>, Yifu Yuan<sup>1</sup>, Fei Ni<sup>3</sup>, Jinyi Liu<sup>1</sup>, Wei Wei<sup>2</sup>, Jianrong Wang<sup>1</sup>, Yan Zheng<sup>1</sup>, and Jianye Hao<sup>1</sup></p>
 
-  <main>
-    <section class="media-band">
-      <div class="shell media-grid">
-        <div>
-          <p class="section-kicker">WarpSAC in action</p>
-          <h2>Scalable learning for challenging control regimes.</h2>
-          <p class="lede">WarpSAC extends FlashSAC with regime-aware replay and stabilization choices, improving sample efficiency and training wall-clock efficiency in the evaluated settings.</p>
-        </div>
-        <video class="demo" controls muted loop playsinline preload="metadata" src="assets/warpsac.mp4">
-          Your browser does not support embedded video. <a href="assets/warpsac.mp4">Open the demo video.</a>
-        </video>
-      </div>
-    </section>
+</div>
+<div class="is-size-5 publication-authors">
+<p><sup>1</sup>Tianjin University · <sup>2</sup>Shanxi University · <sup>3</sup>Imperial College London</p>
 
-    <section class="shell section" id="abstract">
-      <p class="section-kicker">Overview</p>
-      <h2>Abstract</h2>
-      <p>WarpSAC is an off-policy reinforcement-learning framework designed for both CPU-scale and GPU-parallel simulation. It provides JAX and PyTorch backends and supports continuous-control environments spanning MuJoCo, IsaacLab, MJLab, ManiSkill, and related benchmark suites.</p>
-      <p>Our implementation focuses on the interaction between exploration, replay prioritization, parameter normalization, and scalable updates. The same training interface can be used for standard simulator benchmarks and the Unitree G1 sim-to-real locomotion setup.</p>
-    </section>
-
-    <section class="shell section split" id="method">
-      <div>
-        <p class="section-kicker">Method</p>
-        <h2>One interface, multiple regimes.</h2>
-        <p>WarpSAC is a controlled extension of FlashSAC that separates replay-side exploitation from network-side stabilization. Its main replay component is <strong>Sample Weight Decay (SWD)</strong>: each transition receives an age-dependent sampling weight, so recent, policy-relevant data are sampled more often while older transitions retain a nonzero floor for coverage. SWD changes only the minibatch distribution; it adds no auxiliary network, Bellman target, or loss term.</p>
-        <p>Parameter projection normalization is selected from replay coverage. It renormalizes network parameters after each optimizer step, constraining the effective function class and reducing unstable value extrapolation. This is useful when CPU-scale training has narrow replay coverage, so WarpSAC-L keeps normalization enabled together with clipped double-Q targets. GPU-parallel simulation collects broad, rapidly refreshed data; in this data-abundant regime, the same constraint can restrict value fitting, so WarpSAC-A disables parameter normalization and uses the less conservative single-Q variant.</p>
-      </div>
-      <div class="spec-list">
-        <div><strong>WarpSAC-L</strong><span>Data-limited CPU scale: SWD, Norm ON, clipped double-Q</span></div>
-        <div><strong>WarpSAC-A</strong><span>Data-abundant GPU scale: SWD, Norm OFF, single-Q</span></div>
-        <div><strong>Automatic profiles</strong><span>Defaults are resolved from the environment type and replay regime</span></div>
-      </div>
-    </section>
-
-    <section class="shell section" id="results">
-      <p class="section-kicker">Experiments</p>
-      <h2>Sample efficiency and training wall time.</h2>
-      <p>On the Unitree G1 Flat task, the paired curves report sample efficiency and training wall-clock time for WarpSAC, FlashSAC, and PPO.</p>
-      <figure class="figure">
-        <img src="assets/unitree_g1_flat_learning_curves.png" alt="Unitree G1 Flat sample-efficiency and wall-time learning curves">
-        <figcaption>Unitree G1 Flat sim-to-real learning curves.</figcaption>
-      </figure>
-      <div class="domain-gallery">
-        <div class="domain-group">
-          <h3>CPU-scale environments</h3>
-          <div class="domain-grid">
-            <figure class="gallery-card"><div class="gallery-image"><img src="assets/mujoco-env-curves.png" alt="MuJoCo aggregate learning curves"></div><figcaption>MuJoCo</figcaption></figure>
-            <figure class="gallery-card"><div class="gallery-image"><img src="assets/dmc-env-curves.png" alt="DMC aggregate learning curves"></div><figcaption>DMC</figcaption></figure>
-            <figure class="gallery-card"><div class="gallery-image"><img src="assets/humanoidbench-env-curves.png" alt="HumanoidBench aggregate learning curves"></div><figcaption>HumanoidBench</figcaption></figure>
-            <figure class="gallery-card"><div class="gallery-image"><img src="assets/myosuite-env-curves.png" alt="MyoSuite aggregate learning curves"></div><figcaption>MyoSuite</figcaption></figure>
-          </div>
-        </div>
-        <div class="domain-group">
-          <h3>GPU-parallel environments</h3>
-          <div class="domain-grid">
-            <figure class="gallery-card"><div class="gallery-image"><img src="assets/isaaclab-env-curves.png" alt="IsaacLab aggregate learning curves"></div><figcaption>IsaacLab</figcaption></figure>
-            <figure class="gallery-card"><div class="gallery-image"><img src="assets/maniskill-env-curves.png" alt="ManiSkill aggregate learning curves"></div><figcaption>ManiSkill</figcaption></figure>
-            <figure class="gallery-card"><div class="gallery-image"><img src="assets/mjlab-env-curves.png" alt="MJLab aggregate learning curves"></div><figcaption>MJLab</figcaption></figure>
-            <figure class="gallery-card"><div class="gallery-image"><img src="assets/playground-env-curves.png" alt="Playground aggregate learning curves"></div><figcaption>Playground</figcaption></figure>
-          </div>
+</div>
+<div class="column has-text-centered"><div class="publication-links"><span class="link-block"><a href="assets/warpsac-paper.pdf" class="button is-normal is-rounded is-dark"><span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span></a></span><span class="link-block"><a href="#demo" class="button is-normal is-rounded is-dark"><span class="icon"><i class="fab fa-youtube"></i></span><span>Demo</span></a></span><span class="link-block"><a href="https://github.com/wzhhasadream/warprl" class="external-link button is-normal is-rounded is-dark" target="_blank" rel="noopener noreferrer"><span class="icon"><i class="fab fa-github"></i></span><span>Code</span></a></span><span class="link-block"><a href="#results" class="button is-normal is-rounded is-dark"><span class="icon"><i class="fas fa-chart-bar"></i></span><span>Results</span></a></span></div></div>
         </div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
 
-    <section class="shell section" id="getting-started">
-      <p class="section-kicker">Getting started</p>
-      <h2>Get Started with WarpSAC Codebase</h2>
-      <p>We provide an easy-to-use implementation of <strong>WarpSAC</strong> with practical features for scalable off-policy reinforcement-learning research in robotics. The codebase supports JAX and PyTorch backends, automatic environment-specific configuration, CPU and CUDA replay, and the Unitree G1 MJLab sim-to-real setup.</p>
-      <p>Please check out the <a href="https://github.com/wzhhasadream/warprl">WarpSAC GitHub repository</a> for installation instructions, training commands, environment integrations, and configuration options.</p>
-    </section>
+<section class="hero teaser" id="demo">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+<div class="columns is-centered is-multiline media-row">
+<div class="column media-column"><video class="markdown-video" controls muted loop playsinline preload="metadata" src="assets/mp4/warpsac.mp4?v=bc32379bfa11"><a href="assets/mp4/warpsac.mp4?v=bc32379bfa11">Open the video.</a></video>
+<p class="media-caption">(a) WarpSAC on Unitree G1 Flat after approximately 35 minutes of training.</p>
+</div>
+<div class="column media-column"><video class="markdown-video" controls muted loop playsinline preload="metadata" src="assets/mp4/flashsac.mp4?v=a2daa2795f98"><a href="assets/mp4/flashsac.mp4?v=a2daa2795f98">Open the video.</a></video>
+<p class="media-caption">(b) FlashSAC on Unitree G1 Flat after approximately 55 minutes of training.</p>
+</div>
+</div>
+    </div>
+  </div>
+</section>
 
-    <section class="shell section citation" id="citation">
-      <p class="section-kicker">Reference</p>
-      <h2>Citation</h2>
-      <p>Use the following entry when citing the project. Update the author and venue fields when the paper metadata is final.</p>
-      <pre><code>@article{warpsac,
+<section class="section" id="abstract">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+<p>WarpSAC is an off-policy reinforcement-learning framework for both CPU-scale and GPU-parallel simulation. It provides JAX and PyTorch backends and supports continuous-control benchmarks spanning MuJoCo, IsaacLab, MJLab, ManiSkill, and related suites.</p>
+<p>Our implementation examines how exploration, replay prioritization, parameter normalization, and scalable updates interact across data-limited and data-abundant training regimes.</p>
+<p><img src="assets/png/unitree_g1_flat_learning_curves.png" alt="Unitree G1 Flat sample-efficiency and wall-clock learning curves" /></p>
+<div class="figure-caption content has-text-centered">
+<p><strong>Figure 1.</strong> Unitree G1 Flat learning curves measured by environment steps and training wall-clock time. WarpSAC reaches strong performance with fewer environment steps and less wall time than FlashSAC.</p>
+
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="method">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <div class="content">
+<h2 class="title is-3">Method</h2>
+<p>WarpSAC is a controlled extension of FlashSAC that separates replay-side exploitation from network-side stabilization. Its main replay component, <strong>Sample Weight Decay (SWD)</strong>, assigns each transition an age-dependent sampling weight. Recent, policy-relevant data are sampled more often, while older transitions retain a nonzero weight for coverage. SWD changes only the minibatch distribution; it introduces no auxiliary network, Bellman target, or loss term.</p>
+<p>Parameter projection normalization is selected according to replay coverage. It renormalizes network parameters after each optimizer step, constraining the effective function class and reducing unstable value extrapolation. CPU-scale training has narrower replay coverage, so WarpSAC-L keeps normalization enabled together with clipped double-Q targets. GPU-parallel simulation collects broad, rapidly refreshed data; in this data-abundant regime, the same constraint can restrict value fitting, so WarpSAC-A disables normalization and uses the less conservative single-Q variant.</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>Configuration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>WarpSAC-L</strong></td>
+<td>Data-limited CPU scale: SWD, Norm ON, clipped double-Q</td>
+</tr>
+<tr>
+<td><strong>WarpSAC-A</strong></td>
+<td>Data-abundant GPU scale: SWD, Norm OFF, single-Q</td>
+</tr>
+<tr>
+<td><strong>Automatic profiles</strong></td>
+<td>Defaults are resolved from the environment type and replay regime</td>
+</tr>
+</tbody>
+</table>
+<p><img src="assets/png/combined_normalized_cpu_gpu_envstep_curves.png" alt="Combined CPU-scale and GPU-parallel learning curves" /></p>
+<div class="figure-caption content has-text-centered">
+<p><strong>Figure 2.</strong> Combined CPU-scale and GPU-parallel learning curves. We recommend WarpSAC-L for CPU-scale training and WarpSAC-A for GPU-parallel training.</p>
+
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="results">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <div class="content">
+<h2 class="title is-3">Results</h2>
+<h3 class="title is-4">CPU-Scale vs. GPU-Parallel</h3>
+<p>CPU-scale and GPU-parallel workloads present distinct replay regimes. We therefore report them separately, using WarpSAC-L for data-limited CPU-scale environments and WarpSAC-A for data-abundant GPU-parallel environments.</p>
+<p><img src="assets/png/cpu_norm_on_four_panel_curves.png" alt="CPU-scale learning curves in four data-limited environments" /></p>
+<div class="figure-caption content has-text-centered">
+<p><strong>Figure 3.</strong> CPU-scale learning curves across MuJoCo, DMC, HumanoidBench, and MyoSuite. WarpSAC-L is evaluated in the data-limited regime with parameter normalization enabled.</p>
+
+</div>
+<p>GPU-parallel simulation produces broad, rapidly refreshed replay data. The following results evaluate WarpSAC-A in IsaacLab, ManiSkill, MJLab, and Playground.</p>
+<p><img src="assets/png/gpu_single_q_four_panel_curves.png" alt="GPU-parallel learning curves in four data-abundant environments" /></p>
+<div class="figure-caption content has-text-centered">
+<p><strong>Figure 4.</strong> GPU-parallel learning curves across IsaacLab, ManiSkill, MJLab, and Playground. WarpSAC-A is evaluated in the data-abundant regime without parameter normalization.</p>
+
+</div>
+<h3 class="title is-4">Normalization × Network Capacity</h3>
+<p>We next examine how the profile-dependent normalization choice interacts with network capacity. The ablations below cover GPU-parallel Playground training and CPU-scale training separately.</p>
+<p><img src="assets/png/bar_playground_scale_ablation_combined.png" alt="Network-capacity ablation in GPU-parallel training" /></p>
+<div class="figure-caption content has-text-centered">
+<p><strong>Figure 5.</strong> Playground network-capacity ablation comparing WarpSAC variants and FlashSAC in GPU-parallel training.</p>
+
+</div>
+<p>The CPU-scale ablation evaluates the corresponding WarpSAC-L configuration under narrower replay coverage.</p>
+<p><img src="assets/png/cpu_scale_ablation_bars.png" alt="Network-capacity ablation in CPU-scale training" /></p>
+<div class="figure-caption content has-text-centered">
+<p><strong>Figure 6.</strong> CPU-scale network-capacity ablation comparing WarpSAC-L and FlashSAC.</p>
+
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="task-demo-videos">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <div class="content">
+<h2 class="title is-3">Task Demo Videos</h2>
+<div class="columns is-centered is-multiline media-row">
+<div class="column media-column"><video class="markdown-video" controls muted loop playsinline preload="metadata" src="assets/mp4/Unitree-A2-Flat.mp4?v=a4474ac20cdb"><a href="assets/mp4/Unitree-A2-Flat.mp4?v=a4474ac20cdb">Open the video.</a></video>
+<p class="media-caption">Unitree A2 Flat locomotion.</p>
+</div>
+<div class="column media-column"><video class="markdown-video" controls muted loop playsinline preload="metadata" src="assets/mp4/Unitree-G1-Flat.mp4?v=f5da17f455a4"><a href="assets/mp4/Unitree-G1-Flat.mp4?v=f5da17f455a4">Open the video.</a></video>
+<p class="media-caption">Unitree G1 Flat locomotion.</p>
+</div>
+</div>
+<div class="columns is-centered is-multiline media-row">
+<div class="column media-column"><video class="markdown-video" controls muted loop playsinline preload="metadata" src="assets/mp4/Unitree-Go2-Flat.mp4?v=6110b2fde5e9"><a href="assets/mp4/Unitree-Go2-Flat.mp4?v=6110b2fde5e9">Open the video.</a></video>
+<p class="media-caption">Unitree Go2 Flat locomotion.</p>
+</div>
+<div class="column media-column"><video class="markdown-video" controls muted loop playsinline preload="metadata" src="assets/mp4/Unitree-H1_2-Flat.mp4?v=8e071e7e4224"><a href="assets/mp4/Unitree-H1_2-Flat.mp4?v=8e071e7e4224">Open the video.</a></video>
+<p class="media-caption">Unitree H1-2 Flat locomotion.</p>
+</div>
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="getting-started">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <div class="content">
+<h2 class="title is-3">Getting started</h2>
+<p>We provide an easy-to-use implementation of <strong>WarpSAC</strong> for scalable off-policy reinforcement-learning research in robotics. The codebase supports JAX and PyTorch backends, automatic environment-specific configuration, CPU and CUDA replay, and the Unitree G1 MJLab sim-to-real setup.</p>
+<p>Please visit the <a href="https://github.com/wzhhasadream/warprl">WarpSAC GitHub repository</a> for installation instructions, training commands, environment integrations, and configuration options.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="citation">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+<pre><code class="language-bibtex">@article{warpsac,
   title  = {WarpSAC: Towards the Pinnacle of Scalable Off-Policy Reinforcement Learning},
   author = {Wu, Zihao and Tang, Hongyao and Ma, Yi and Song, Huizhong and Li, Pengyi and Yuan, Yifu and Ni, Fei and Liu, Jinyi and Wei, Wei and Wang, Jianrong and Zheng, Yan and Hao, Jianye},
   year   = {2026}
-}</code></pre>
-    </section>
-  </main>
+}
+</code></pre>
+  </div>
+</section>
 
-  <footer class="shell footer">WarpSAC · Official project page</footer>
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <p>WarpSAC · Official project page</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const darkModeToggle = document.querySelector('[data-dark-mode]');
+  if (darkModeToggle) {
+    const themeKey = 'warpsac-theme-v2';
+    const savedTheme = localStorage.getItem(themeKey);
+    darkModeToggle.checked = savedTheme === 'dark';
+    document.body.classList.toggle('dark-mode', darkModeToggle.checked);
+    darkModeToggle.addEventListener('change', () => {
+      document.body.classList.toggle('dark-mode', darkModeToggle.checked);
+      localStorage.setItem(themeKey, darkModeToggle.checked ? 'dark' : 'light');
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof bulmaCarousel !== 'undefined') {
+      bulmaCarousel.attach('.carousel', {
+        slidesToScroll: 1,
+        slidesToShow: 1,
+        loop: true,
+        infinite: true,
+        autoplay: false,
+      });
+    }
+  });
+</script>
 </body>
 </html>
