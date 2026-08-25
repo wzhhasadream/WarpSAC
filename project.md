@@ -41,7 +41,7 @@ Zihao Wu^1^, Hongyao Tang^1^, Yi Ma^2^, Huizhong Song^2^, Pengyi Li^1^, Yifu Yua
 
 WarpSAC is an off-policy reinforcement-learning framework for both CPU-scale and GPU-parallel simulation. It provides JAX and PyTorch backends and supports continuous-control benchmarks spanning MuJoCo, IsaacLab, MJLab, ManiSkill, and related suites.
 
-Our implementation examines how exploration, replay prioritization, parameter normalization, and scalable updates interact across data-limited and data-abundant training regimes.
+Our implementation examines how exploration, replay prioritization, parameter normalization, and scalable updates behave across CPU-scale and GPU-parallel training settings.
 
 ![Unitree G1 Flat sample-efficiency and wall-clock learning curves](assets/png/unitree_g1_flat_learning_curves.png)
 
@@ -53,13 +53,13 @@ Our implementation examines how exploration, replay prioritization, parameter no
 
 WarpSAC is a controlled extension of FlashSAC that separates replay-side exploitation from network-side stabilization. Its main replay component, **Sample Weight Decay (SWD)**, assigns each transition an age-dependent sampling weight. Recent, policy-relevant data are sampled more often, while older transitions retain a nonzero weight for coverage. SWD changes only the minibatch distribution; it introduces no auxiliary network, Bellman target, or loss term.
 
-Parameter projection normalization is selected according to replay coverage. It renormalizes network parameters after each optimizer step, constraining the effective function class and reducing unstable value extrapolation. CPU-scale training has narrower replay coverage, so WarpSAC-L keeps normalization enabled together with clipped double-Q targets. GPU-parallel simulation collects broad, rapidly refreshed data; in this data-abundant regime, the same constraint can restrict value fitting, so WarpSAC-A disables normalization and uses the less conservative single-Q variant.
+Parameter projection normalization is the profile-level distinction between the two workload settings. It renormalizes network parameters after each optimizer step, constraining the effective function class and reducing unstable value extrapolation. WarpSAC-L enables normalization for CPU-scale training, while WarpSAC-A disables it for GPU-parallel training. Both profiles use the same SWD replay mechanism; the profiles do not represent different replay buffers or different state-action-pair coverage assumptions.
 
 | Profile | Configuration |
 | --- | --- |
-| **WarpSAC-L** | Data-limited CPU scale: SWD, Norm ON, clipped double-Q |
-| **WarpSAC-A** | Data-abundant GPU scale: SWD, Norm OFF, single-Q |
-| **Automatic profiles** | Defaults are resolved from the environment type and replay regime |
+| **WarpSAC-L** | CPU-scale profile: SWD, Norm ON, clipped double-Q |
+| **WarpSAC-A** | GPU-parallel profile: SWD, Norm OFF, single-Q |
+| **Automatic profiles** | Defaults are resolved from the environment type and workload scale |
 
 
 ![Combined CPU-scale and GPU-parallel learning curves](assets/png/combined_normalized_cpu_gpu_envstep_curves.png)
@@ -72,20 +72,20 @@ Parameter projection normalization is selected according to replay coverage. It 
 
 ### CPU-Scale vs. GPU-Parallel
 
-CPU-scale and GPU-parallel workloads present distinct replay regimes. We therefore report them separately, using WarpSAC-L for data-limited CPU-scale environments and WarpSAC-A for data-abundant GPU-parallel environments.
+CPU-scale and GPU-parallel workloads use the same SWD replay mechanism; the profile distinction here is parameter normalization. We therefore report them separately, using WarpSAC-L with normalization enabled for CPU-scale environments and WarpSAC-A with normalization disabled for GPU-parallel environments.
 
 ![CPU-scale learning curves in four data-limited environments](assets/png/cpu_norm_on_four_panel_curves.png)
 
 ::: caption
-**Figure 3.** CPU-scale learning curves across MuJoCo, DMC, HumanoidBench, and MyoSuite. WarpSAC-L is evaluated in the data-limited regime with parameter normalization enabled.
+**Figure 3.** CPU-scale learning curves across MuJoCo, DMC, HumanoidBench, and MyoSuite. WarpSAC-L is evaluated with parameter normalization enabled.
 :::
 
-GPU-parallel simulation produces broad, rapidly refreshed replay data. The following results evaluate WarpSAC-A in IsaacLab, ManiSkill, MJLab, and Playground.
+The following results evaluate WarpSAC-A with parameter normalization disabled in IsaacLab, ManiSkill, MJLab, and Playground.
 
 ![GPU-parallel learning curves in four data-abundant environments](assets/png/gpu_single_q_four_panel_curves.png)
 
 ::: caption
-**Figure 4.** GPU-parallel learning curves across IsaacLab, ManiSkill, MJLab, and Playground. WarpSAC-A is evaluated in the data-abundant regime without parameter normalization.
+**Figure 4.** GPU-parallel learning curves across IsaacLab, ManiSkill, MJLab, and Playground. WarpSAC-A is evaluated with parameter normalization disabled.
 :::
 
 ### Normalization × Network Capacity
@@ -98,7 +98,7 @@ We next examine how the profile-dependent normalization choice interacts with ne
 **Figure 5.** Playground network-capacity ablation comparing WarpSAC variants and FlashSAC in GPU-parallel training.
 :::
 
-The CPU-scale ablation evaluates the corresponding WarpSAC-L configuration under narrower replay coverage.
+The CPU-scale ablation evaluates the corresponding WarpSAC-L configuration with parameter normalization enabled.
 
 ![Network-capacity ablation in CPU-scale training](assets/png/cpu_scale_ablation_bars.png)
 
