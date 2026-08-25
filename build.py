@@ -55,6 +55,10 @@ VIDEO_PARAGRAPH_RE = re.compile(
     r'<img src="(?P<image>[^"]+\.(?:mp4|webm|ogg))" alt="(?P<image_label>.*?)"\s*/?>)\s*</p>',
     re.IGNORECASE | re.DOTALL,
 )
+NAV_CONTAINER_RE = re.compile(
+    r"^:::\s*nav\s*$\n(.*?)^:::\s*$",
+    re.MULTILINE | re.DOTALL,
+)
 
 
 def parse_project(path: Path) -> tuple[dict[str, str], str]:
@@ -100,6 +104,33 @@ def render_button_links(content: str) -> str:
         '<div class="column has-text-centered">'
         f'<div class="publication-links">{"".join(buttons)}</div>'
         "</div>"
+    )
+
+
+def render_navigation(markdown: MarkdownIt, content: str) -> str:
+    """Render navigation links declared in a project.md nav container."""
+    rendered = markdown.render(content.strip())
+    links: list[str] = []
+    for match in re.finditer(r"<a\b(?P<attrs>[^>]*)>(?P<label>.*?)</a>", rendered, re.DOTALL | re.IGNORECASE):
+        attrs = match.group("attrs")
+        href_match = re.search(r'\bhref="([^"]*)"', attrs, re.IGNORECASE)
+        if not href_match:
+            continue
+        href = href_match.group(1)
+        label = match.group("label").strip()
+        safe_href = html.escape(href, quote=True)
+        external = href.startswith(("http://", "https://"))
+        target = ' target="_blank" rel="noopener noreferrer"' if external else ""
+        links.append(
+            f'<a class="navbar-item" href="{safe_href}"{target}>{label}</a>'
+        )
+    if not links:
+        return ""
+    return (
+        '<nav class="navbar project-navbar" role="navigation" aria-label="Project navigation">'
+        '<div class="navbar-menu is-active"><div class="navbar-start">'
+        + "".join(links)
+        + "</div></div></nav>"
     )
 
 
@@ -514,6 +545,10 @@ def main() -> None:
     metadata, body = parse_project(ROOT / "project.md")
     markdown = MarkdownIt("commonmark", {"html": True, "linkify": True, "typographer": True})
     markdown.enable("table").enable("strikethrough")
+    nav_match = NAV_CONTAINER_RE.search(body)
+    navigation = render_navigation(markdown, nav_match.group(1)) if nav_match else ""
+    if nav_match:
+        body = body[: nav_match.start()] + body[nav_match.end() :]
     button_match = re.search(r"^::: button\n(.*?)^:::\s*$", body, re.MULTILINE | re.DOTALL)
     button_source = button_match.group(1).strip() if button_match else ""
     rendered = make_sections(add_heading_ids(render_markdown(markdown, body)), button_source)
@@ -525,12 +560,13 @@ def main() -> None:
     values = {
         "title": metadata.get("title", short_title),
         "description": metadata.get("tagline", markdown_title),
+        "navigation": navigation,
         "sections": rendered,
     }
     values.update(metadata)
     template = (ROOT / "template.html").read_text(encoding="utf-8")
     for key, value in values.items():
-        raw_keys = {"sections"}
+        raw_keys = {"navigation", "sections"}
         replacement = value if key in raw_keys else html.escape(value, quote=True)
         template = template.replace("{{" + key + "}}", replacement)
     (ROOT / "index.html").write_text(template, encoding="utf-8")

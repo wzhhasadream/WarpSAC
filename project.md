@@ -2,6 +2,13 @@
 ::: dark-mode
 :::
 
+::: nav
+[<i class="fas fa-home" aria-hidden="true"></i>](./)
+[Results](#results)
+[Getting started](#getting-started)
+[Citation](#citation)
+:::
+
 # WarpSAC: Towards the Pinnacle of Scalable Off-Policy RL by Rethinking Exploration and Exploitation
 
 ::: author
