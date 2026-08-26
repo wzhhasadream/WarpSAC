@@ -241,6 +241,11 @@ body.dark-mode .markdown-content img {
   margin-top: 1rem;
 }
 
+.link-block a {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
 .results-carousel {
   margin: 0 auto;
 }

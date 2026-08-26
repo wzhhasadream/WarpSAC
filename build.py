@@ -7,10 +7,9 @@ import html
 import hashlib
 import re
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse, urlunparse
+from urllib.parse import urlparse, urlunparse
 
 try:
-    import yaml
     from markdown_it import MarkdownIt
 except ImportError as exc:
     raise SystemExit(
@@ -33,7 +32,6 @@ CAROUSEL_CELL_RE = re.compile(
 )
 MEDIA_DIRECTIVE_RE = re.compile(r"@\[([a-zA-Z][\w-]*)\]\(\s*(.*?)\s*\)")
 SUPERSCRIPT_RE = re.compile(r"\^([0-9]+(?:,[*†‡]+)?|[*†‡]+)\^")
-ICON_TAG_RE = re.compile(r'<i\s+class="fa\s+([^" ]+)"[^>]*>\s*</i>', re.IGNORECASE)
 BUTTON_LINK_RE = re.compile(
     r'\[<i class="fa fa-([^"]+)"[^>]*></i>\s*([^\]]+)\]\(([^)]+)\)'
 )
@@ -51,36 +49,16 @@ SECTION_LAYOUT = {
     "video-gallery": "carousel-band",
     "citation": "bibtex",
 }
-VIDEO_PARAGRAPH_RE = re.compile(
-    r'<p>\s*(?:<a href="(?P<link>[^"]+\.(?:mp4|webm|ogg)(?:[?#][^"]*)?)"(?:[^>]*)>(?P<link_label>.*?)</a>|'
-    r'<img src="(?P<image>[^"]+\.(?:mp4|webm|ogg))" alt="(?P<image_label>.*?)"\s*/?>)\s*</p>',
-    re.IGNORECASE | re.DOTALL,
-)
 NAV_CONTAINER_RE = re.compile(
     r"^:::\s*nav\s*$\n(.*?)^:::\s*$",
     re.MULTILINE | re.DOTALL,
 )
 
 
-def parse_project(path: Path) -> tuple[dict[str, str], str]:
-    source = path.read_text(encoding="utf-8")
-    if not source.startswith("---\n"):
-        return {}, source
-    _, front_matter, body = source.split("---\n", 2)
-    metadata = yaml.safe_load(front_matter) or {}
-    return {str(key): "" if value is None else str(value) for key, value in metadata.items()}, body
-
-
 def slugify(text: str) -> str:
     plain = re.sub(r"<[^>]+>", "", text)
     plain = html.unescape(plain).strip().lower()
     return re.sub(r"[^a-z0-9]+", "-", plain).strip("-")
-
-
-def add_heading_ids(markup: str) -> str:
-    return markup
-
-
 def render_button_links(content: str) -> str:
     buttons: list[str] = []
     for icon_key, label, href in BUTTON_LINK_RE.findall(content):
@@ -160,14 +138,6 @@ def normalize_headings(content: str) -> str:
 
 def wrap_hero(content: str) -> str:
     content = normalize_headings(content)
-    content = content.replace(
-        'class="markdown-container author-container"',
-        'class="is-size-5 publication-authors"',
-    )
-    content = content.replace(
-        'class="markdown-container institution-container"',
-        'class="is-size-5 publication-authors"',
-    )
     return (
         '<section class="hero">\n'
         '  <div class="hero-body">\n'
@@ -262,32 +232,12 @@ def wrap_section(section_id: str, heading: str, body: str) -> str:
     )
 
 
-def inject_button_links(content: str, button_markup: str) -> str:
-    if button_markup:
-        content = re.sub(
-            r'<div class="markdown-container button-container">\s*<p>.*?</p>\s*</div>',
-            button_markup,
-            content,
-            flags=re.DOTALL,
-        )
-    else:
-        content = re.sub(
-            r'<div class="markdown-container button-container">\s*<p>.*?</p>\s*</div>',
-            "",
-            content,
-            flags=re.DOTALL,
-        )
-    return content
-
-
-def make_sections(markup: str, button_source: str = "") -> str:
+def make_sections(markup: str) -> str:
     parts = re.split(r"(?=<h2(?:\s|>))", markup)
     sections: list[str] = []
-    button_markup = render_button_links(button_source)
 
     hero = parts[0].strip()
     if hero:
-        hero = inject_button_links(hero, button_markup)
         sections.append(wrap_hero(hero))
 
     for part in parts[1:]:
@@ -302,19 +252,6 @@ def make_sections(markup: str, button_source: str = "") -> str:
         sections.append(wrap_section(section_id, heading, part.strip()))
 
     return "\n\n".join(sections)
-
-
-def replace_video_paragraphs(markup: str) -> str:
-    def replace(match: re.Match[str]) -> str:
-        url = match.group("link") or match.group("image")
-        label = match.group("link_label") or match.group("image_label") or "Video"
-        return (
-            f'<video class="markdown-video" controls muted loop playsinline preload="metadata" '
-            f'src="{html.escape(url, quote=True)}" aria-label="{html.escape(label, quote=True)}">'
-            f'<a href="{html.escape(url, quote=True)}">Open the video.</a></video>'
-        )
-
-    return VIDEO_PARAGRAPH_RE.sub(replace, markup)
 
 
 def youtube_id(value: str) -> str:
@@ -377,22 +314,6 @@ def replace_media_directives(markdown: MarkdownIt, body: str) -> tuple[str, list
     return body_with_markers, media_blocks
 
 
-def replace_icon_markup(markup: str) -> str:
-    icons = {
-        "fa-file-pdf-o": '<svg class="inline-icon inline-icon-svg inline-icon-pdf" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2.75h8.2L19 7.55V21.25H6A2.25 2.25 0 0 1 3.75 19V5A2.25 2.25 0 0 1 6 2.75Zm7.5 1.8v4h4M8 12.25h6.5M8 15.75h8M8 8.75h2.5"/></svg>',
-        "fa-github": '<svg class="inline-icon inline-icon-svg inline-icon-github" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2.17c-3.22.7-3.9-1.36-3.9-1.36-.52-1.34-1.28-1.7-1.28-1.7-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.2 1.77 1.2 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.57-.29-5.27-1.29-5.27-5.73 0-1.27.45-2.3 1.2-3.11-.12-.3-.52-1.47.11-3.06 0 0 .98-.31 3.16 1.19A10.92 10.92 0 0 1 12 5.95c.99 0 1.98.13 2.91.38 2.18-1.5 3.16-1.19 3.16-1.19.63 1.59.23 2.76.11 3.06.75.81 1.2 1.84 1.2 3.11 0 4.45-2.71 5.43-5.29 5.72.42.36.78 1.08.78 2.18v3.24c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg>',
-        "fa-youtube": '<span class="inline-icon inline-icon-youtube" aria-hidden="true">▶</span>',
-        "fa-youtube-play": '<span class="inline-icon inline-icon-youtube" aria-hidden="true">▶</span>',
-        "fa-chart-bar": '<svg class="inline-icon inline-icon-svg inline-icon-results" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>',
-        "fa-results": '<span class="inline-icon inline-icon-results" aria-hidden="true">↘</span>',
-    }
-
-    def replace(match: re.Match[str]) -> str:
-        return icons.get(match.group(1), "")
-
-    return re.sub(r'<i\s+class="fa\s+([^" ]+)"[^>]*>\s*</i>', replace, markup)
-
-
 def render_container(markdown: MarkdownIt, name: str, content: str) -> str:
     name = name.lower()
     if name == "dark-mode" and not content.strip():
@@ -424,7 +345,6 @@ def render_container(markdown: MarkdownIt, name: str, content: str) -> str:
         return render_button_links(content)
 
     inner = render_markdown(markdown, content.strip())
-    inner = replace_icon_markup(inner)
     if name == "caption":
         return f'<div class="figure-caption content has-text-centered">\n{inner}\n</div>'
     if name == "author":
@@ -482,11 +402,6 @@ def render_carousel(markdown: MarkdownIt, content: str) -> str:
 def render_markdown(markdown: MarkdownIt, body: str) -> str:
     containers: list[str] = []
     carousels: list[str] = []
-    inline_icons: list[str] = []
-
-    def replace_icon(match: re.Match[str]) -> str:
-        inline_icons.append(replace_icon_markup(f'<i class="fa {match.group(1)}"></i>'))
-        return f"INLINEICON{len(inline_icons) - 1}TOKEN"
 
     def replace_container(match: re.Match[str]) -> str:
         index = len(containers)
@@ -502,71 +417,38 @@ def render_markdown(markdown: MarkdownIt, body: str) -> str:
     # by the generic three-colon container parser.
     body_with_carousels = CAROUSEL_RE.sub(replace_carousel, body)
     body_with_containers = CONTAINER_RE.sub(replace_container, body_with_carousels)
-    body_with_containers = ICON_TAG_RE.sub(replace_icon, body_with_containers)
     body_with_containers = SUPERSCRIPT_RE.sub(r"<sup>\1</sup>", body_with_containers)
     body_with_media, media_blocks = replace_media_directives(markdown, body_with_containers)
-    rendered = replace_video_paragraphs(markdown.render(body_with_media))
+    rendered = markdown.render(body_with_media)
     for index, block in enumerate(media_blocks):
         rendered = rendered.replace(f"<!-- MEDIA_DIRECTIVE_{index} -->", block)
     for index, container in enumerate(containers):
         rendered = rendered.replace(f"<!-- CONTAINER_{index} -->", container)
     for index, carousel in enumerate(carousels):
         rendered = rendered.replace(f"<!-- CAROUSEL_{index} -->", carousel)
-    for index, icon in enumerate(inline_icons):
-        rendered = rendered.replace(f"INLINEICON{index}TOKEN", icon)
     return rendered
 
 
-def make_action_buttons(metadata: dict[str, str]) -> str:
-    icons = {
-        "paper": '<svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2.75h8.2L19 7.55V21.25H6A2.25 2.25 0 0 1 3.75 19V5A2.25 2.25 0 0 1 6 2.75Zm7.5 1.8v4h4M8 12.25h6.5M8 15.75h8M8 8.75h2.5"/></svg>',
-        "demo": '<svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9.25 6.9 8 5.1-8 5.1V6.9Z"/></svg>',
-        "github": '<svg class="button-icon button-icon-github" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2.17c-3.22.7-3.9-1.36-3.9-1.36-.52-1.34-1.28-1.7-1.28-1.7-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.2 1.77 1.2 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.57-.29-5.27-1.29-5.27-5.73 0-1.27.45-2.3 1.2-3.11-.12-.3-.52-1.47.11-3.06 0 0 .98-.31 3.16 1.19A10.92 10.92 0 0 1 12 5.95c.99 0 1.98.13 2.91.38 2.18-1.5 3.16-1.19 3.16-1.19.63 1.59.23 2.76.11 3.06.75.81 1.2 1.84 1.2 3.11 0 4.45-2.71 5.43-5.29 5.72.42.36.78 1.08.78 2.18v3.24c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg>',
-        "huggingface": '<span class="button-icon button-icon-huggingface" aria-hidden="true">🤗</span>',
-    }
-    links = [
-        ("paper", metadata.get("paper", ""), "Paper", "button-paper"),
-        ("demo", metadata.get("demo", ""), "Demo", "button-demo"),
-        ("github", metadata.get("github", metadata.get("code", "")), "GitHub", "button-github"),
-        ("huggingface", metadata.get("huggingface", ""), "Hugging Face", "button-huggingface"),
-    ]
-    buttons = []
-    for icon_name, url, label, class_name in links:
-        if not url:
-            continue
-        safe_url = html.escape(url, quote=True)
-        external = ' target="_blank" rel="noopener noreferrer"' if url.startswith(("http://", "https://")) else ""
-        buttons.append(f'<a class="button button-pill {class_name}" href="{safe_url}"{external} title="{label}">{icons[icon_name]}<span>{label}</span></a>')
-    buttons.extend([
-        '<a class="button button-pill button-results" href="#results" title="View results"><span class="button-icon button-icon-results" aria-hidden="true">↘</span><span>Results</span></a>',
-        '<a class="button button-pill button-citation" href="#citation" title="View citation"><span class="button-icon button-icon-citation" aria-hidden="true">{ }</span><span>Citation</span></a>',
-    ])
-    return "\n      ".join(buttons)
-
-
 def main() -> None:
-    metadata, body = parse_project(ROOT / "project.md")
+    body = (ROOT / "project.md").read_text(encoding="utf-8")
     markdown = MarkdownIt("commonmark", {"html": True, "linkify": True, "typographer": True})
     markdown.enable("table").enable("strikethrough")
     nav_match = NAV_CONTAINER_RE.search(body)
     navigation = render_navigation(markdown, nav_match.group(1)) if nav_match else ""
     if nav_match:
         body = body[: nav_match.start()] + body[nav_match.end() :]
-    button_match = re.search(r"^::: button\n(.*?)^:::\s*$", body, re.MULTILINE | re.DOTALL)
-    button_source = button_match.group(1).strip() if button_match else ""
-    rendered = make_sections(add_heading_ids(render_markdown(markdown, body)), button_source)
+    rendered = make_sections(render_markdown(markdown, body))
 
     title_match = re.search(r"^#\s+(.+)$", body, flags=re.MULTILINE)
     markdown_title = title_match.group(1).strip() if title_match else "Research Project"
     short_title = markdown_title.split(":", 1)[0]
 
     values = {
-        "title": metadata.get("title", short_title),
-        "description": metadata.get("tagline", markdown_title),
+        "title": short_title,
+        "description": markdown_title,
         "navigation": navigation,
         "sections": rendered,
     }
-    values.update(metadata)
     template = (ROOT / "template.html").read_text(encoding="utf-8")
     for key, value in values.items():
         raw_keys = {"navigation", "sections"}
