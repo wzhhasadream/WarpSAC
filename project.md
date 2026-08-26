@@ -24,6 +24,7 @@ Zihao Wu^1^, Hongyao Tang^1^, Yi Ma^2^, Huizhong Song^2^, Pengyi Li^1^, Yifu Yua
 [<i class="fa fa-youtube-play" aria-hidden="true"></i> Demo](#demo)
 [<i class="fa fa-github" aria-hidden="true"></i> Code](https://github.com/wzhhasadream/warprl)
 [<i class="fa fa-chart-bar" aria-hidden="true"></i> Results](#results)
+[<i class="fa fa-file-alt" aria-hidden="true"></i> arXiv](https://arxiv.org/abs/2608.24479)
 :::
 
 ## Demo
@@ -134,12 +135,14 @@ Please visit the [WarpSAC GitHub repository](https://github.com/wzhhasadream/war
 
 ## Citation
 
-Use the following entry when citing the project. Update the author and venue fields when the paper metadata is final.
+Please use the following BibTeX entry when citing WarpSAC.
 
 ```bibtex
-@article{warpsac,
-  title  = {WarpSAC: Towards the Pinnacle of Scalable Off-Policy Reinforcement Learning},
-  author = {Wu, Zihao and Tang, Hongyao and Ma, Yi and Song, Huizhong and Li, Pengyi and Yuan, Yifu and Ni, Fei and Liu, Jinyi and Wei, Wei and Wang, Jianrong and Zheng, Yan and Hao, Jianye},
-  year   = {2026}
+@article{wu2026warpsac,
+  title         = {WarpSAC: Towards the Pinnacle of Scalable Off-policy Reinforcement Learning by Rethinking Exploration and Exploitation},
+  author        = {Wu, Zihao and Tang, Hongyao and Ma, Yi and Song, Huizhong and Li, Pengyi and Yuan, Yifu and Ni, Fei and Liu, Jinyi and Wei, Wei and Wang, Jianrong and Zheng, Yan and Hao, Jianye},
+  journal       = {arXiv preprint arXiv:2608.24479},
+  year          = {2026},
+  url           = {https://arxiv.org/abs/2608.24479}
 }
 ```

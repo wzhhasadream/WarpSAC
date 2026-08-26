@@ -39,6 +39,7 @@ BUTTON_LINK_RE = re.compile(
 )
 BUTTON_ICON_MAP = {
     "file-pdf-o": "fas fa-file-pdf",
+    "file-alt": "fas fa-file-alt",
     "youtube-play": "fab fa-youtube",
     "github": "fab fa-github",
     "chart-bar": "fas fa-chart-bar",
