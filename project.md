@@ -12,11 +12,15 @@
 # WarpSAC: Towards the Pinnacle of Scalable Off-Policy RL by Rethinking Exploration and Exploitation
 
 ::: author
-Zihao Wu^1^, Hongyao Tang^1^, Yi Ma^2^, Huizhong Song^2^, Pengyi Li^1^, Yifu Yuan^1^, Fei Ni^3^, Jinyi Liu^1^, Wei Wei^2^, Jianrong Wang^1^, Yan Zheng^1^, and Jianye Hao^1^
+Zihao Wu^1^, Hongyao Tang^1,†^, Yi Ma^2,†^, Huizhong Song^2^, Pengyi Li^1^, Yifu Yuan^1^, Fei Ni^3^, Jinyi Liu^1^, Wei Wei^2^, Jianrong Wang^1^, Yan Zheng^1^, and Jianye Hao^1,†^
 :::
 
 ::: institution
 ^1^Tianjin University · ^2^Shanxi University · ^3^Imperial College London
+:::
+
+::: contribution
+^†^ Corresponding authors
 :::
 
 ::: button
@@ -31,10 +35,10 @@ Zihao Wu^1^, Hongyao Tang^1^, Yi Ma^2^, Huizhong Song^2^, Pengyi Li^1^, Yifu Yua
 
 ::: row
 @[video](assets/mp4/warpsac.mp4)
-(a) WarpSAC on Unitree G1 Flat after approximately 35 minutes of training.
+(a) WarpSAC on Unitree G1 Flat after approximately 35 minutes of training on a single A800 GPU.
 
 @[video](assets/mp4/flashsac.mp4)
-(b) FlashSAC on Unitree G1 Flat after approximately 55 minutes of training.
+(b) FlashSAC on Unitree G1 Flat after approximately 55 minutes of training on a single A800 GPU.
 :::
 
 

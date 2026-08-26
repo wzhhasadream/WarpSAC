@@ -63,6 +63,17 @@ body {
   margin-bottom: 0.45rem;
 }
 
+.publication-contributions {
+  margin-top: 0.35rem;
+  color: #555;
+  font-family: "Google Sans", "Noto Sans", sans-serif;
+  font-size: 0.95rem;
+}
+
+.publication-contributions p {
+  margin-bottom: 0;
+}
+
 .publication-authors a {
   text-decoration: none;
 }
@@ -111,7 +122,8 @@ body.dark-mode .hero.is-light {
 body.dark-mode .title,
 body.dark-mode .subtitle,
 body.dark-mode .content,
-body.dark-mode .publication-authors {
+body.dark-mode .publication-authors,
+body.dark-mode .publication-contributions {
   color: #f5f5f5;
 }
 

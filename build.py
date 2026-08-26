@@ -32,7 +32,7 @@ CAROUSEL_CELL_RE = re.compile(
     re.MULTILINE | re.DOTALL,
 )
 MEDIA_DIRECTIVE_RE = re.compile(r"@\[([a-zA-Z][\w-]*)\]\(\s*(.*?)\s*\)")
-SUPERSCRIPT_RE = re.compile(r"\^([0-9]+)\^")
+SUPERSCRIPT_RE = re.compile(r"\^([0-9]+(?:,[*†‡]+)?|[*†‡]+)\^")
 ICON_TAG_RE = re.compile(r'<i\s+class="fa\s+([^" ]+)"[^>]*>\s*</i>', re.IGNORECASE)
 BUTTON_LINK_RE = re.compile(
     r'\[<i class="fa fa-([^"]+)"[^>]*></i>\s*([^\]]+)\]\(([^)]+)\)'
@@ -431,6 +431,8 @@ def render_container(markdown: MarkdownIt, name: str, content: str) -> str:
         return f'<div class="is-size-5 publication-authors">\n{inner}\n</div>'
     if name == "institution":
         return f'<div class="is-size-5 publication-authors">\n{inner}\n</div>'
+    if name == "contribution":
+        return f'<div class="publication-contributions">\n{inner}\n</div>'
     return f'<div class="markdown-container {html.escape(name, quote=True)}-container">\n{inner}\n</div>'
 
 
