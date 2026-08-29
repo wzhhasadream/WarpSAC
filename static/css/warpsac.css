@@ -143,6 +143,10 @@ body.dark-mode .markdown-content img {
   padding-bottom: 3rem;
 }
 
+.teaser > .container {
+  width: 100%;
+}
+
 .teaser video,
 .section video,
 .results-carousel video {
